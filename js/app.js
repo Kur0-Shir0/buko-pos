@@ -39,7 +39,7 @@ const App = {
     },
 
     reloadView() {
-        this.init();
+        this.navigate(this.currentView);
     }
 };
 

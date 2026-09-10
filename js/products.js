@@ -1,11 +1,11 @@
 // Product Operational Business Actions Controller
 const ProductsController = {
     async addProduct(name, price, category, type, quantity) {
-        if (!name || isNaN(price) || price <= 0) return alert('Please fill out all the boxes correctly (check the item name and price).');
+        if (!name || isNaN(price) || price <= 0) return alert('Invalid criteria definitions entry.');
         
         const products = await DB.getAll('products');
         if (products.some(p => p.name.toLowerCase() === name.toLowerCase())) {
-            return alert("An item with this exact name already exists in your menu catalog.");
+            return alert("A product with this identical tracking title matching constraint name exists.");
         }
 
         const id = Utils.generateUUID();

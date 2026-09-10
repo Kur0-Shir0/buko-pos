@@ -21,13 +21,13 @@ const Views = {
 
                 ${lowStock.length > 0 ? `
                 <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-xl">
-                    <h3 class="font-bold text-amber-800 text-sm">⚠️ Low Stock Ingredients Warning</h3>
+                    <h3 class="font-bold text-amber-800 text-sm">⚠️ Low Stock Ingredients System Warning</h3>
                     <div class="mt-2 text-xs text-amber-700 font-medium">${lowStock.map(i => `${i.name} (${i.quantity} left)`).join(', ')}</div>
                 </div>` : ''}
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h3 class="font-black text-lg tracking-tight mb-4 text-gray-800">Operational Instructions Overview</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Open your shift on the app before making any sales. Your sales are instantly saved on the phone so you never lose data. The moment your phone catches a cellular or Wi-Fi signal, it automatically copies all sales to your online Google Sheet.</p>
+                    <p class="text-gray-500 text-sm leading-relaxed">Open a register shift window tab inside the system prior to attempting transactions. Sales logs automatically commit to IndexedDB locally and pass via background workers into connected Google Sheets whenever data service captures internet reception.</p>
                 </div>
             </div>`;
     },
@@ -37,7 +37,7 @@ const Views = {
         const activeShift = await DB.get('settings', 'active_shift');
 
         if (!activeShift) {
-            return `<div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center max-w-md mx-auto mt-12"><span class="text-4xl block mb-3">🔒</span><h3 class="font-bold text-gray-700">Counter Register Vault Closed</h3><p class="text-sm text-gray-400 mt-2">Please start your daily shift on the Shift page before doing this.</p></div>`;
+            return `<div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center max-w-md mx-auto mt-12"><span class="text-4xl block mb-3">🔒</span><h3 class="font-bold text-gray-700">Counter Register Vault Closed</h3><p class="text-sm text-gray-400 mt-2">Initialize an operational daily opening tracking matrix workflow step session inside the Shift component view before executing checks.</p></div>`;
         }
 
         let cartLines = SalesController.cart.map(item => `
@@ -200,7 +200,7 @@ const Views = {
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 max-w-md mx-auto mt-8 text-center space-y-4">
                     <span class="text-4xl block">🏪</span>
                     <h3 class="font-black text-lg text-gray-800">Initialize Morning Register Shift</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed">Type the amount of money inside the drawer to start the day.</p>
+                    <p class="text-sm text-gray-400 leading-relaxed">Input the base counting fund available inside the drawer to begin calculations for the operating day.</p>
                     <div class="text-left">
                         <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Opening Petty Cash Fund</label>
                         <input type="number" id="opening-cash" value="500" class="w-full border border-gray-300 rounded-xl p-3 font-bold text-base text-center text-gray-800 focus:ring-2 focus:ring-green-500 outline-hidden">
@@ -276,7 +276,7 @@ const Views = {
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-2">
                         <h3 class="font-black text-base text-gray-800">Spreadsheet CSV Engine</h3>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="ImporterController.exportToCSV(products, ['name', 'price', 'category', 'status'], 'BukoPOS_Products.csv')" class="bg-gray-100 text-gray-700 font-bold text-xs py-2.5 rounded-xl border border-gray-200">Export Catalog</button>
+                            <button onclick="DB.getAll('products').then(p => ImporterController.exportToCSV(p, ['name', 'price', 'category', 'status'], 'BukoPOS_Products.csv'))" class="bg-gray-100 text-gray-700 font-bold text-xs py-2.5 rounded-xl border border-gray-200">Export Catalog</button>
                             <label class="bg-gray-100 text-gray-700 font-bold text-xs py-2.5 rounded-xl border border-gray-200 text-center cursor-pointer block">
                                 Import Catalog
                                 <input type="file" accept=".csv" onchange="ImporterController.parseCSVImport(event)" class="hidden">

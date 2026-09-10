@@ -42,14 +42,16 @@ const SalesController = {
 
     async processCheckout(cashReceived) {
         const activeShift = await DB.get('settings', 'active_shift');
-        if (!activeShift) return alert("Please open your shift first before making a sale.");
-        if (this.cart.length === 0) return alert("Your cart is empty. Tap menu items to add them here.");
+        if (!activeShift) return alert("Please open a daily operations cashier shift window register tab balance first.");
+        if (this.cart.length === 0) return alert("Checkout tracking pipeline canvas register is empty.");
         
         const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
         const discountAmount = subtotal * this.discountPct;
         const total = subtotal - discountAmount;
-        
-        if (cashReceived < total) return alert("Not enough cash entered. Please check the amount given by the customer.");
+
+        // Bug 2: parse to float before comparison — raw DOM value is a string
+        const cashFloat = parseFloat(cashReceived);
+        if (isNaN(cashFloat) || cashFloat < total) return alert("Insufficient payment presented.");
 
         // Deduct associated inventory levels
         for (let item of this.cart) {
@@ -70,21 +72,26 @@ const SalesController = {
             subtotal,
             discount: discountAmount,
             total,
-            cashReceived: parseFloat(cashReceived),
-            change: cashReceived - total,
+            cashReceived: cashFloat,
+            change: cashFloat - total,
             isPwdOrSenior: this.isPwdOrSenior,
             customerName: this.customerName,
             idNumber: this.idNumber
         };
 
         await DB.save('sales', saleRecord);
-        SyncEngine.queueItem('sale', saleRecord);
-        SyncEngine.syncCurrentInventory();
+        // Dup-2: await both sync calls sequentially so inventory is fully deducted
+        // before it is snapshotted, and no concurrent processQueue() races occur
+        await SyncEngine.queueItem('sale', saleRecord);
+        await SyncEngine.syncCurrentInventory();
 
         alert(`Checkout Successful! Change: ${Utils.formatPHP(saleRecord.change)}`);
+        // Bug 8: reset all customer fields so they don't carry over to the next transaction
         this.cart = [];
         this.discountPct = 0;
         this.isPwdOrSenior = false;
+        this.customerName = '';
+        this.idNumber = '';
         App.reloadView();
     }
 };

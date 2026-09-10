@@ -1,7 +1,10 @@
 // Background Synchronization Queue Processing Engine [cite: 294, 303]
 const SyncEngine = {
     // PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL LINK HERE
-    webAppUrl: "https://script.google.com/macros/s/AKfycbx293Pot1pF-d-70eXM7Hi9Lo9Iior3eplCc8D7B8Bb8ZEWeoAxdYzgBeQXtItAo8_IWA/exec",
+    webAppUrl: "",
+
+    // Mutex flag: prevents concurrent processQueue() runs that cause duplicate sends
+    isSyncing: false,
 
     async queueItem(type, data) {
         const queueObj = { type, data: JSON.parse(JSON.stringify(data)), timestamp: Date.now() };
@@ -10,7 +13,8 @@ const SyncEngine = {
     },
 
     async processQueue() {
-        if (!navigator.onLine || !this.webAppUrl) {
+        // Guard: if a sync is already in flight, skip — avoids sending duplicates to Google Sheets
+        if (this.isSyncing || !navigator.onLine || !this.webAppUrl) {
             this.updateBadge();
             return;
         }
@@ -21,33 +25,39 @@ const SyncEngine = {
             return;
         }
 
+        this.isSyncing = true;
         document.getElementById('sync-badge').className = "bg-yellow-500 text-white px-2 py-0.5 rounded-full text-xs animate-pulse";
         document.getElementById('sync-badge').innerText = `Syncing (${items.length})`;
 
-        for (let item of items) {
-            try {
-                const res = await fetch(this.webAppUrl, {
-                    method: 'POST',
-                    mode: 'cors',
-                    body: JSON.stringify({ type: item.type, data: item.data })
-                });
-                const confirmation = await res.json();
-                if (confirmation.status === 'success') {
-                    await DB.delete('syncQueue', item.id);
-                } else {
+        try {
+            for (let item of items) {
+                try {
+                    const res = await fetch(this.webAppUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        body: JSON.stringify({ type: item.type, data: item.data })
+                    });
+                    const confirmation = await res.json();
+                    if (confirmation.status === 'success') {
+                        await DB.delete('syncQueue', item.id);
+                    } else {
+                        break;
+                    }
+                } catch (err) {
+                    console.warn("Spreadsheet reporting interface unreachable. Retaining queue records.", err);
                     break;
                 }
-            } catch (err) {
-                console.warn("Spreadsheet reporting interface unreachable. Retaining queue records.", err);
-                break;
             }
+        } finally {
+            // Always release the lock so future syncs can proceed
+            this.isSyncing = false;
+            this.updateBadge();
         }
-        this.updateBadge();
     },
 
     async syncCurrentInventory() {
         const stockItems = await DB.getAll('inventory');
-        this.queueItem('inventory', stockItems);
+        await this.queueItem('inventory', stockItems);
     },
 
     async updateBadge() {

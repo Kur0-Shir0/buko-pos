@@ -1,7 +1,7 @@
 // Miscellaneous Expense Operational Business Management Layer [cite: 221]
 const ExpensesController = {
     async addExpense(desc, cat, amt, notes) {
-        if (!desc || isNaN(amt) || amt <= 0) return alert("Please enter what you bought (for example: 'Bought 2 Bags of Ice').");
+        if (!desc || amt === '' || amt === null || isNaN(amt) || parseFloat(amt) <= 0) return alert("Provide a valid matching description field tracking metric value.");
 
         const record = {
             id: Utils.generateUUID(),

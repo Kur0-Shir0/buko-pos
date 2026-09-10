@@ -17,6 +17,38 @@ const ImporterController = {
         a.click();
     },
 
+    // Bug 7 fix: RFC 4180-compliant CSV line parser that handles quoted fields containing commas
+    parseCSVLine(line) {
+        const fields = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (inQuotes) {
+                if (ch === '"' && line[i + 1] === '"') {
+                    // Escaped quote inside a quoted field
+                    current += '"';
+                    i++;
+                } else if (ch === '"') {
+                    inQuotes = false;
+                } else {
+                    current += ch;
+                }
+            } else {
+                if (ch === '"') {
+                    inQuotes = true;
+                } else if (ch === ',') {
+                    fields.push(current.trim());
+                    current = '';
+                } else {
+                    current += ch;
+                }
+            }
+        }
+        fields.push(current.trim());
+        return fields;
+    },
+
     async parseCSVImport(fileEvent) {
         const file = fileEvent.target.files[0];
         if (!file) return;
@@ -25,11 +57,11 @@ const ImporterController = {
             const lines = e.target.result.split(/\r?\n/).filter(line => line.trim() !== "");
             if (lines.length <= 1) return alert("The import sheet file contains no rows.");
             
-            const headers = lines[0].split(",").map(h => h.replace(/"/g, '').trim());
+            const headers = this.parseCSVLine(lines[0]);
             let imported = 0;
 
             for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(",").map(v => v.replace(/"/g, '').trim());
+                const values = this.parseCSVLine(lines[i]);
                 if (values.length < headers.length) continue;
 
                 const name = values[headers.indexOf("Product Name")];

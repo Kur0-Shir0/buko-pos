@@ -26,11 +26,11 @@ const BackupController = {
                 if (data.inventory) for (let i of data.inventory) await DB.save('inventory', i);
                 if (data.sales) for (let s of data.sales) await DB.save('sales', s);
                 if (data.expenses) for (let ex of data.expenses) await DB.save('expenses', ex);
-                alert("System successfully restored! All your products and sales history are back.");
+                alert("Internal device parameters structural parsing operation fully successful.");
                 SyncEngine.syncCurrentInventory();
                 App.reloadView();
             } catch (err) {
-                alert("Cannot open file. The file might be broken or it is not an official Buko POS backup file.");
+                alert("Corruption detected parsing structural schema file definition inputs.");
             }
         };
         reader.readAsText(file);

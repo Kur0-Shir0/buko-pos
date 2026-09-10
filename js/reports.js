@@ -1,14 +1,14 @@
 // Shift Management and Reconciliation Controller [cite: 222]
 const ReportsController = {
     async openShift(openingAmount) {
-        if (isNaN(openingAmount) || openingAmount < 0) return alert("Please type a valid amount for your morning change fund (for example: 500).");
+        if (openingAmount === '' || openingAmount === null || isNaN(openingAmount) || parseFloat(openingAmount) < 0) return alert("Invalid opening currency asset.");
         const shiftObj = { isOpen: true, date: Utils.getTodayDate(), openingCash: parseFloat(openingAmount) };
         await DB.save('settings', shiftObj, 'active_shift');
         App.reloadView();
     },
 
     async closeShift(actualCount) {
-        if (isNaN(actualCount) || actualCount < 0) return alert("Please count the money in the drawer and type the total amount here before closing.");
+        if (actualCount === '' || actualCount === null || isNaN(actualCount) || parseFloat(actualCount) < 0) return alert("Provide an actual counted absolute register tier value balance.");
         
         const activeShift = await DB.get('settings', 'active_shift');
         const sales = await DB.getAll('sales');
@@ -34,7 +34,7 @@ const ReportsController = {
         await DB.delete('settings', 'active_shift');
         SyncEngine.queueItem('shift', summaryLog);
         
-        alert(`Shift successfully closed!\nCash Mistake Count (Short/Over): ${Utils.formatPHP(variance)}`);
+        alert(`Shift Safely Finalized!\nVariance Captured: ${Utils.formatPHP(variance)}`);
         App.reloadView();
     }
 };
