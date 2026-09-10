@@ -264,15 +264,6 @@ const Views = {
                         </div>
                     </div>
 
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
-                        <h3 class="font-black text-base text-gray-800">Google Sheets Sync Setup</h3>
-                        <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Paste your Google Apps Script Link Here</label>
-                            <input type="text" id="sync-url-input" value="${SyncEngine.webAppUrl}" placeholder="https://script.google.com/macros/s/.../exec" class="w-full border border-gray-300 rounded-xl p-2.5 text-xs font-mono focus:ring-2 focus:ring-green-500 outline-hidden bg-gray-50">
-                            <button onclick="SyncEngine.webAppUrl = document.getElementById('sync-url-input').value; alert('Spreadsheet connected successfully.'); SyncEngine.processQueue();" class="w-full bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-2 mt-2">Connect Google Sheets</button>
-                        </div>
-                    </div>
-
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-2">
                         <h3 class="font-black text-base text-gray-800">Import / Export Setup</h3>
                         <div class="grid grid-cols-2 gap-2">

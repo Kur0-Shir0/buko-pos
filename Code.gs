@@ -23,7 +23,8 @@ function getOrCreateSheetWithHeaders(sheetName, headers) {
 
 function doPost(e) {
   try {
-    const payload = JSON.parse(e.postData.contents);
+    const rawBody = e && e.postData && e.postData.contents ? e.postData.contents : '{}';
+    const payload = JSON.parse(rawBody);
 
     switch (payload.type) {
       case 'sale': {

@@ -1,10 +1,19 @@
 // Background Synchronization Queue Processing Engine [cite: 294, 303]
 const SyncEngine = {
-    // PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL LINK HERE
-    webAppUrl: "",
+    // Fixed Google Apps Script URL for the seller app
+    webAppUrl: "https://script.google.com/macros/s/AKfycbzps_3d_3e-0tH8y7Fx2eQJwGR9L8BvEia4gh9NQw9V2X0w7QvDw1QFQ6T3_xxjR0m2P/exec",
 
     // Mutex flag: prevents concurrent processQueue() runs that cause duplicate sends
     isSyncing: false,
+
+    async loadSavedUrl() {
+        return this.webAppUrl;
+    },
+
+    async saveWebAppUrl(url) {
+        this.webAppUrl = (url || '').trim() || this.webAppUrl;
+        return this.webAppUrl;
+    },
 
     async queueItem(type, data) {
         const queueObj = { type, data: JSON.parse(JSON.stringify(data)), timestamp: Date.now() };
@@ -32,15 +41,21 @@ const SyncEngine = {
         try {
             for (let item of items) {
                 try {
-                    const res = await fetch(this.webAppUrl, {
+                    const response = await fetch(this.webAppUrl, {
                         method: 'POST',
                         mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
                         body: JSON.stringify({ type: item.type, data: item.data })
                     });
-                    const confirmation = await res.json();
+
+                    const confirmation = await response.json();
                     if (confirmation.status === 'success') {
                         await DB.delete('syncQueue', item.id);
                     } else {
+                        console.warn('Spreadsheet sync rejected payload:', confirmation);
                         break;
                     }
                 } catch (err) {
@@ -63,7 +78,7 @@ const SyncEngine = {
     async updateBadge() {
         const badge = document.getElementById('sync-badge');
         const count = (await DB.getAll('syncQueue')).length;
-        
+
         if (!navigator.onLine) {
             badge.className = "bg-gray-500 text-white px-2 py-0.5 rounded-full text-xs";
             badge.innerText = `Offline (${count})`;

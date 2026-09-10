@@ -5,7 +5,8 @@ const App = {
     async init() {
         // Run internal data object layer check passes safely
         await DB.init();
-        
+        await SyncEngine.loadSavedUrl();
+
         // Synchronize active context drawer visual interface state flags
         const activeShift = await DB.get('settings', 'active_shift');
         const shiftBadge = document.getElementById('shift-status-badge');
