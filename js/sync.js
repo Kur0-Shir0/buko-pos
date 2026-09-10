@@ -1,7 +1,7 @@
 // Background Synchronization Queue Processing Engine [cite: 294, 303]
 const SyncEngine = {
     // Fixed Google Apps Script URL for the seller app
-    webAppUrl: "https://script.google.com/macros/s/AKfycbzps_3d_3e-0tH8y7Fx2eQJwGR9L8BvEia4gh9NQw9V2X0w7QvDw1QFQ6T3_xxjR0m2P/exec",
+    webAppUrl: "https://script.google.com/macros/s/AKfycbx293Pot1pF-d-70eXM7Hi9Lo9Iior3eplCc8D7B8Bb8ZEWeoAxdYzgBeQXtItAo8_IWA/exec",
 
     // Mutex flag: prevents concurrent processQueue() runs that cause duplicate sends
     isSyncing: false,
