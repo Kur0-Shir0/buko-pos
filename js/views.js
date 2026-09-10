@@ -1,4 +1,4 @@
-// Dynamic UI Component Layout Engine Template Router Matrix [cite: 225]
+// Dynamic UI Component Layout Engine Template Router Matrix
 const Views = {
     async dashboard() {
         const sales = await DB.getAll('sales');
@@ -21,13 +21,13 @@ const Views = {
 
                 ${lowStock.length > 0 ? `
                 <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-xl">
-                    <h3 class="font-bold text-amber-800 text-sm">⚠️ Low Stock Ingredients System Warning</h3>
+                    <h3 class="font-bold text-amber-800 text-sm">⚠️ Low Stock Warning</h3>
                     <div class="mt-2 text-xs text-amber-700 font-medium">${lowStock.map(i => `${i.name} (${i.quantity} left)`).join(', ')}</div>
                 </div>` : ''}
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <h3 class="font-black text-lg tracking-tight mb-4 text-gray-800">Operational Instructions Overview</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Open a register shift window tab inside the system prior to attempting transactions. Sales logs automatically commit to IndexedDB locally and pass via background workers into connected Google Sheets whenever data service captures internet reception.</p>
+                    <h3 class="font-black text-lg tracking-tight mb-4 text-gray-800">Quick Guide</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">Open your shift on the app before making any sales. Your sales are instantly saved on the phone so you never lose data. The moment your phone catches a cellular or Wi-Fi signal, it automatically copies all sales to your online Google Sheet.</p>
                 </div>
             </div>`;
     },
@@ -37,7 +37,7 @@ const Views = {
         const activeShift = await DB.get('settings', 'active_shift');
 
         if (!activeShift) {
-            return `<div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center max-w-md mx-auto mt-12"><span class="text-4xl block mb-3">🔒</span><h3 class="font-bold text-gray-700">Counter Register Vault Closed</h3><p class="text-sm text-gray-400 mt-2">Initialize an operational daily opening tracking matrix workflow step session inside the Shift component view before executing checks.</p></div>`;
+            return `<div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center max-w-md mx-auto mt-12"><span class="text-4xl block mb-3">🔒</span><h3 class="font-bold text-gray-700">Register is Closed</h3><p class="text-sm text-gray-400 mt-2">Please open your shift first before making a sale.</p></div>`;
         }
 
         let cartLines = SalesController.cart.map(item => `
@@ -63,14 +63,14 @@ const Views = {
         return `
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 space-y-4">
-                    <h3 class="font-black text-xl tracking-tight text-gray-800">Menu Choices Catalog</h3>
+                    <h3 class="font-black text-xl tracking-tight text-gray-800">Menu</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">${productGrid || '<p class="text-sm text-gray-400 col-span-full">No active products added.</p>'}</div>
                 </div>
 
                 <div class="bg-white p-5 rounded-3xl shadow-xl border border-gray-100 flex flex-col justify-between h-fit space-y-4 sticky top-24">
                     <div>
                         <h3 class="font-black text-lg tracking-tight text-gray-800 mb-3 flex justify-between items-center">Current Order <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-md font-bold">${SalesController.cart.length} unique items</span></h3>
-                        <div class="space-y-2 max-h-[220px] overflow-y-auto pr-1">${cartLines || '<p class="text-xs text-gray-400 text-center py-8 font-medium">Add menu items to compile a receipt stack.</p>'}</div>
+                        <div class="space-y-2 max-h-[220px] overflow-y-auto pr-1">${cartLines || '<p class="text-xs text-gray-400 text-center py-8 font-medium">Your cart is empty. Tap menu items to add them here.</p>'}</div>
                     </div>
 
                     <div class="space-y-3 pt-3 border-t border-gray-100">
@@ -88,14 +88,14 @@ const Views = {
 
                         <div class="space-y-1 text-sm text-gray-600 font-medium">
                             <div class="flex justify-between"><span>Subtotal:</span><span>${Utils.formatPHP(subtotal)}</span></div>
-                            <div class="flex justify-between text-red-500"><span>Discount Deductions:</span><span>-${Utils.formatPHP(discount)}</span></div>
-                            <div class="flex justify-between font-black text-lg text-gray-900 pt-1"><span>Grand Total:</span><span>${Utils.formatPHP(total)}</span></div>
+                            <div class="flex justify-between text-red-500"><span>Discount:</span><span>-${Utils.formatPHP(discount)}</span></div>
+                            <div class="flex justify-between font-black text-lg text-gray-900 pt-1"><span>Total to Pay:</span><span>${Utils.formatPHP(total)}</span></div>
                         </div>
 
                         <div class="space-y-2 pt-2">
-                            <label class="block text-xs font-bold text-gray-400 uppercase">Cash Tendered</label>
+                            <label class="block text-xs font-bold text-gray-400 uppercase">Cash Given By Customer</label>
                             <input type="number" id="cash-given" placeholder="₱0.00" class="w-full border border-gray-300 rounded-xl p-3 font-black text-lg text-gray-800 tracking-tight focus:ring-2 focus:ring-green-500 outline-hidden bg-gray-50">
-                            <button onclick="SalesController.processCheckout(document.getElementById('cash-given').value)" class="w-full bg-green-600 text-white font-black text-sm tracking-wide rounded-2xl py-4 shadow-md hover:bg-green-700 active:scale-[0.99] transition-all">COMPLETE TRANSACTION</button>
+                            <button onclick="SalesController.processCheckout(document.getElementById('cash-given').value)" class="w-full bg-green-600 text-white font-black text-sm tracking-wide rounded-2xl py-4 shadow-md hover:bg-green-700 active:scale-[0.99] transition-all">COMPLETE SALE</button>
                         </div>
                     </div>
                 </div>
@@ -119,19 +119,19 @@ const Views = {
 
         return `
             <div class="space-y-4">
-                <h3 class="font-black text-xl tracking-tight text-gray-800">Ingredients & Asset Count Control</h3>
+                <h3 class="font-black text-xl tracking-tight text-gray-800">Inventory & Stock Levels</h3>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50 text-gray-400 font-bold uppercase text-[10px] tracking-wider border-b border-gray-200">
-                                    <th class="px-4 py-3">Item Label</th>
+                                    <th class="px-4 py-3">Item Name</th>
                                     <th class="px-4 py-3">Type</th>
-                                    <th class="px-4 py-3">Current Balance</th>
+                                    <th class="px-4 py-3">Stock Count</th>
                                     <th class="px-4 py-3">Adjust Stock</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100">${stockRows || '<tr><td colspan="4" class="p-4 text-xs text-gray-400 text-center font-medium">Add a product to track matching inventory targets.</td></tr>'}</tbody>
+                            <tbody class="divide-y divide-gray-100">${stockRows || '<tr><td colspan="4" class="p-4 text-xs text-gray-400 text-center font-medium">Add a product in Settings to see inventory here.</td></tr>'}</tbody>
                         </table>
                     </div>
                 </div>
@@ -152,10 +152,10 @@ const Views = {
         return `
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 h-fit space-y-4">
-                    <h3 class="font-black text-lg tracking-tight text-gray-800">Log Operating Expense</h3>
+                    <h3 class="font-black text-lg tracking-tight text-gray-800">Log an Expense</h3>
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Description</label>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">What did you buy?</label>
                             <input type="text" id="exp-desc" placeholder="e.g., Bought Ice Blocks" class="w-full border border-gray-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-green-500 outline-hidden">
                         </div>
                         <div>
@@ -168,20 +168,20 @@ const Views = {
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Amount Cost</label>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">How much did it cost?</label>
                             <input type="number" id="exp-amt" placeholder="₱0.00" class="w-full border border-gray-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-green-500 outline-hidden">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Optional Notes</label>
-                            <input type="text" id="exp-notes" placeholder="Vendor info, details..." class="w-full border border-gray-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-green-500 outline-hidden">
+                            <input type="text" id="exp-notes" placeholder="Vendor info, extra details..." class="w-full border border-gray-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-green-500 outline-hidden">
                         </div>
-                        <button onclick="ExpensesController.addExpense(document.getElementById('exp-desc').value, document.getElementById('exp-cat').value, document.getElementById('exp-amt').value, document.getElementById('exp-notes').value)" class="w-full bg-red-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-3 shadow-xs hover:bg-red-600 active:scale-[0.99] transition-all">Record Expense</button>
+                        <button onclick="ExpensesController.addExpense(document.getElementById('exp-desc').value, document.getElementById('exp-cat').value, document.getElementById('exp-amt').value, document.getElementById('exp-notes').value)" class="w-full bg-red-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-3 shadow-xs hover:bg-red-600 active:scale-[0.99] transition-all">Save Expense</button>
                     </div>
                 </div>
 
                 <div class="lg:col-span-2 space-y-3">
-                    <h3 class="font-black text-xl tracking-tight text-gray-800">Today's Operating Expenditures Ledger</h3>
-                    <div class="space-y-2 max-h-[480px] overflow-y-auto pr-1">${expenseLines || '<p class="text-sm text-gray-400 py-12 text-center font-medium bg-white rounded-2xl border border-dashed border-gray-200">No operational outlays logged today.</p>'}</div>
+                    <h3 class="font-black text-xl tracking-tight text-gray-800">Today's Expenses</h3>
+                    <div class="space-y-2 max-h-[480px] overflow-y-auto pr-1">${expenseLines || '<p class="text-sm text-gray-400 py-12 text-center font-medium bg-white rounded-2xl border border-dashed border-gray-200">No expenses logged today.</p>'}</div>
                 </div>
             </div>`;
     },
@@ -199,13 +199,13 @@ const Views = {
             return `
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 max-w-md mx-auto mt-8 text-center space-y-4">
                     <span class="text-4xl block">🏪</span>
-                    <h3 class="font-black text-lg text-gray-800">Initialize Morning Register Shift</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed">Input the base counting fund available inside the drawer to begin calculations for the operating day.</p>
+                    <h3 class="font-black text-lg text-gray-800">Open Your Register Shift</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Enter the starting cash in your drawer for today.</p>
                     <div class="text-left">
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Opening Petty Cash Fund</label>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Starting Cash Fund</label>
                         <input type="number" id="opening-cash" value="500" class="w-full border border-gray-300 rounded-xl p-3 font-bold text-base text-center text-gray-800 focus:ring-2 focus:ring-green-500 outline-hidden">
                     </div>
-                    <button onclick="ReportsController.openShift(document.getElementById('opening-cash').value)" class="w-full bg-green-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-3.5 shadow-md hover:bg-green-700">Open Register Session</button>
+                    <button onclick="ReportsController.openShift(document.getElementById('opening-cash').value)" class="w-full bg-green-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-3.5 shadow-md hover:bg-green-700">Open Register</button>
                 </div>`;
         }
 
@@ -214,23 +214,23 @@ const Views = {
         return `
             <div class="bg-white p-6 rounded-3xl shadow-md border border-gray-100 max-w-lg mx-auto space-y-6">
                 <div>
-                    <h3 class="font-black text-xl tracking-tight text-gray-800">Active Shift Live Summary</h3>
+                    <h3 class="font-black text-xl tracking-tight text-gray-800">Current Shift Summary</h3>
                     <p class="text-xs text-gray-400 font-medium mt-0.5">Session Started Today: ${activeShift.date}</p>
                 </div>
 
                 <div class="divide-y divide-gray-100 text-sm font-medium text-gray-600">
-                    <div class="flex justify-between py-3"><span>(+) Drawer Starting Fund:</span><span class="text-gray-900 font-bold">${Utils.formatPHP(activeShift.openingCash)}</span></div>
-                    <div class="flex justify-between py-3"><span>(+) Computed Gross Sales:</span><span class="text-green-600 font-bold">${Utils.formatPHP(todaySales)}</span></div>
-                    <div class="flex justify-between py-3"><span>(-) Outbound Expenses:</span><span class="text-red-500 font-bold">${Utils.formatPHP(todayExp)}</span></div>
-                    <div class="flex justify-between py-3 border-t border-gray-200 font-black text-base text-gray-900 pt-3"><span>(=) Expected Till Cash:</span><span>${Utils.formatPHP(expectedCash)}</span></div>
+                    <div class="flex justify-between py-3"><span>(+) Starting Cash:</span><span class="text-gray-900 font-bold">${Utils.formatPHP(activeShift.openingCash)}</span></div>
+                    <div class="flex justify-between py-3"><span>(+) Sales Made:</span><span class="text-green-600 font-bold">${Utils.formatPHP(todaySales)}</span></div>
+                    <div class="flex justify-between py-3"><span>(-) Money Spent:</span><span class="text-red-500 font-bold">${Utils.formatPHP(todayExp)}</span></div>
+                    <div class="flex justify-between py-3 border-t border-gray-200 font-black text-base text-gray-900 pt-3"><span>(=) Expected Cash in Drawer:</span><span>${Utils.formatPHP(expectedCash)}</span></div>
                 </div>
 
                 <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-3">
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Actual Physical Coin & Bill Drawer Count</label>
-                        <input type="number" id="actual-cash" placeholder="Count coins and bills..." class="w-full border border-gray-300 rounded-xl p-3 font-black text-lg text-gray-800 focus:ring-2 focus:ring-green-500 outline-hidden bg-white">
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Count the actual money in the drawer</label>
+                        <input type="number" id="actual-cash" placeholder="Enter total counted amount..." class="w-full border border-gray-300 rounded-xl p-3 font-black text-lg text-gray-800 focus:ring-2 focus:ring-green-500 outline-hidden bg-white">
                     </div>
-                    <button onclick="ReportsController.closeShift(document.getElementById('actual-cash').value)" class="w-full bg-gray-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-3.5 shadow-sm hover:bg-gray-900 transition-all">Lock & Close out Day Session</button>
+                    <button onclick="ReportsController.closeShift(document.getElementById('actual-cash').value)" class="w-full bg-gray-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-3.5 shadow-sm hover:bg-gray-900 transition-all">Close Register Shift</button>
                 </div>
             </div>`;
     },
@@ -256,36 +256,36 @@ const Views = {
                             <input type="number" id="prod-price" placeholder="Price (₱)" class="w-full border border-gray-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-green-500 outline-hidden">
                             <input type="text" id="prod-cat" placeholder="Category (e.g., Shake, Juice)" class="w-full border border-gray-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-green-500 outline-hidden">
                             <select id="prod-type" class="w-full border border-gray-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-green-500 outline-hidden bg-white">
-                                <option value="Finished Item">Finished Standalone Product</option>
-                                <option value="Ingredient">Raw Material Ingredient Element</option>
+                                <option value="Finished Item">Finished Product (e.g., Juice)</option>
+                                <option value="Ingredient">Raw Ingredient (e.g., Sugar)</option>
                             </select>
-                            <input type="number" id="prod-stock" placeholder="Initial Starting Stock Balance Count" class="w-full border border-gray-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-green-500 outline-hidden">
-                            <button onclick="ProductsController.addProduct(document.getElementById('prod-name').value, document.getElementById('prod-price').value, document.getElementById('prod-cat').value, document.getElementById('prod-type').value, document.getElementById('prod-stock').value)" class="w-full bg-green-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-2.5 mt-2">Save to Catalog</button>
+                            <input type="number" id="prod-stock" placeholder="Initial Starting Stock Count" class="w-full border border-gray-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-green-500 outline-hidden">
+                            <button onclick="ProductsController.addProduct(document.getElementById('prod-name').value, document.getElementById('prod-price').value, document.getElementById('prod-cat').value, document.getElementById('prod-type').value, document.getElementById('prod-stock').value)" class="w-full bg-green-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-2.5 mt-2">Save to Menu</button>
                         </div>
                     </div>
 
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
-                        <h3 class="font-black text-base text-gray-800">Reporting Engine Endpoint</h3>
+                        <h3 class="font-black text-base text-gray-800">Google Sheets Sync Setup</h3>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Google Apps Script Web App Endpoint Address URL</label>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Paste your Google Apps Script Link Here</label>
                             <input type="text" id="sync-url-input" value="${SyncEngine.webAppUrl}" placeholder="https://script.google.com/macros/s/.../exec" class="w-full border border-gray-300 rounded-xl p-2.5 text-xs font-mono focus:ring-2 focus:ring-green-500 outline-hidden bg-gray-50">
-                            <button onclick="SyncEngine.webAppUrl = document.getElementById('sync-url-input').value; alert('Pipeline interface URL updated.'); SyncEngine.processQueue();" class="w-full bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-2 mt-2">Bind Endpoint URL</button>
+                            <button onclick="SyncEngine.webAppUrl = document.getElementById('sync-url-input').value; alert('Spreadsheet connected successfully.'); SyncEngine.processQueue();" class="w-full bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl py-2 mt-2">Connect Google Sheets</button>
                         </div>
                     </div>
 
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-2">
-                        <h3 class="font-black text-base text-gray-800">Spreadsheet CSV Engine</h3>
+                        <h3 class="font-black text-base text-gray-800">Import / Export Setup</h3>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="DB.getAll('products').then(p => ImporterController.exportToCSV(p, ['name', 'price', 'category', 'status'], 'BukoPOS_Products.csv'))" class="bg-gray-100 text-gray-700 font-bold text-xs py-2.5 rounded-xl border border-gray-200">Export Catalog</button>
+                            <button onclick="DB.getAll('products').then(p => ImporterController.exportToCSV(p, ['name', 'price', 'category', 'status'], 'BukoPOS_Products.csv'))" class="bg-gray-100 text-gray-700 font-bold text-xs py-2.5 rounded-xl border border-gray-200">Export Menu</button>
                             <label class="bg-gray-100 text-gray-700 font-bold text-xs py-2.5 rounded-xl border border-gray-200 text-center cursor-pointer block">
-                                Import Catalog
+                                Import Menu
                                 <input type="file" accept=".csv" onchange="ImporterController.parseCSVImport(event)" class="hidden">
                             </label>
                         </div>
                         <div class="grid grid-cols-2 gap-2 pt-1">
-                            <button onclick="BackupController.exportData()" class="bg-gray-800 text-white font-bold text-xs py-2.5 rounded-xl shadow-2xs">System Backup</button>
+                            <button onclick="BackupController.exportData()" class="bg-gray-800 text-white font-bold text-xs py-2.5 rounded-xl shadow-2xs">Save Backup</button>
                             <label class="bg-gray-800 text-white font-bold text-xs py-2.5 rounded-xl shadow-2xs text-center cursor-pointer block">
-                                Restore System
+                                Load Backup
                                 <input type="file" accept=".json" onchange="BackupController.importData(event)" class="hidden">
                             </label>
                         </div>
@@ -293,8 +293,8 @@ const Views = {
                 </div>
 
                 <div class="lg:col-span-2 space-y-3">
-                    <h3 class="font-black text-xl tracking-tight text-gray-800">Master Catalog Registry Matrix</h3>
-                    <div class="space-y-2 max-h-[640px] overflow-y-auto pr-1">${productRows || '<p class="text-sm text-gray-400 py-12 text-center font-medium bg-white rounded-2xl border border-dashed border-gray-200">No entries listed.</p>'}</div>
+                    <h3 class="font-black text-xl tracking-tight text-gray-800">Full Product List</h3>
+                    <div class="space-y-2 max-h-[640px] overflow-y-auto pr-1">${productRows || '<p class="text-sm text-gray-400 py-12 text-center font-medium bg-white rounded-2xl border border-dashed border-gray-200">No items added to the menu yet.</p>'}</div>
                 </div>
             </div>`;
     }
